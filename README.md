@@ -15,7 +15,8 @@ A lightweight, user-friendly Python utility designed to edit career money in **N
 * **Admin Privileges**: Automatically requests UAC elevation to ensure it can write save data in protected directories.
 * **Bilingual**: Full support for both **Italian** and **English**.
 * **Deep Scan**: Recursively searches for profile-specific files (save files with no extension) across multiple drives.
-* **Rename Option
+* **Rename Option**
+* **MAZDA MX5 OVVERRIDE (SLOT 1)**
 
 ## 🛠️ How it Works
 
@@ -42,4 +43,4 @@ The tool modifies the save file at a specific hex offset (**41322**) where NFSU2
 If you want to create a standalone executable for Windows, use **PyInstaller**:
 
 ```bash
-pyinstaller --noconfirm --onefile --windowed --add-data "nfs.jpg;." --add-data "nfsu2_icon.ico;." --icon "nfsu2_icon.ico" --uac-admin nfsu2_money_patcher.py
+pyinstaller --noconfirm --onefile --windowed --add-data "header.png;." --add-data "icona.ico;." --icon "icona.ico" --uac-admin nfsu2_money_patcher.py
