@@ -15,6 +15,7 @@ A lightweight, user-friendly Python utility designed to edit career money in **N
 * **Admin Privileges**: Automatically requests UAC elevation to ensure it can write save data in protected directories.
 * **Bilingual**: Full support for both **Italian** and **English**.
 * **Deep Scan**: Recursively searches for profile-specific files (save files with no extension) across multiple drives.
+* **Rename Option
 
 ## 🛠️ How it Works
 
