@@ -6,7 +6,7 @@ A lightweight, user-friendly Python utility designed to edit career money in **N
 
 | Italian Interface | English Interface |
 | :---: | :---: |
-| ![Italian UI]() | ![English UI]() |
+| ![Italian UI](patcher_it.png) | ![English UI](patcher.png) |
 
 ## ✨ Features
 
