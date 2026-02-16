@@ -16,7 +16,7 @@ A lightweight, user-friendly Python utility designed to edit career money in **N
 * **Bilingual**: Full support for both **Italian** and **English**.
 * **Deep Scan**: Recursively searches for profile-specific files (save files with no extension) across multiple drives.
 * **Rename Option**
-* **MAZDA MX5 OVVERRIDE (SLOT 1)**
+* **VEHICLE SWAP !(SLOT 1)**
 
 ## 🛠️ How it Works
 
@@ -30,7 +30,7 @@ The tool modifies the save file at a specific hex offset (**41322**) where NFSU2
 
 2.  **Running the script**:
     ```bash
-    python nfsu2_money_patcher.py
+    python nfsu2_profile_master.py
     ```
 
 3.  **Using the App**:
