@@ -43,4 +43,4 @@ The tool modifies the save file at a specific hex offset (**41322**) where NFSU2
 If you want to create a standalone executable for Windows, use **PyInstaller**:
 
 ```bash
-pyinstaller --noconfirm --onefile --windowed --add-data "header.png;." --add-data "icona.ico;." --icon "icona.ico" --uac-admin nfsu2_money_patcher.py
+pyinstaller --noconfirm --onefile --windowed --add-data "header.png;." --add-data "icona.ico;." --icon "icona.ico" --uac-admin nfsu2_profile_master.py
