@@ -1,6 +1,6 @@
-# NFSU2 Money Patcher 🏁
+# NFSU2 Profile Master 🏁
 
-A lightweight, user-friendly Python utility designed to edit career money in **Need for Speed Underground 2**. It handles the technical heavy lifting like finding hidden save paths and bypassing Windows folder permissions.
+A lightweight, user-friendly Python utility designed to edit savegames in **Need for Speed Underground 2**. It handles the technical heavy lifting like finding hidden save paths and bypassing Windows folder permissions.
 
 ## 🖼️ Screenshots
 
