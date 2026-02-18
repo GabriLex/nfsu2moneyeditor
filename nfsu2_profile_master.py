@@ -23,12 +23,14 @@ LANG = {
         'profiles': 'PROFILI TROVATI:',
         'select_car': 'SELEZIONA AUTO:',
         'inject_btn': 'INNIETTA AUTO',
+        'unlock_parts': 'SBLOCCA PEZZI SPECIALI',
         'money': 'SOLDI:',
         'patch_btn': 'PATCHA SOLDI',
         'rename_btn': 'RINOMINA PROFILO (SAFE)',
         'backup_btn': 'BACKUP SU DESKTOP',
-        'footer': 'Need for Speed Underground 2 Editor - Versione 1.0.4',
-        'success_inject': 'Auto iniettata con successo!',
+        'footer': 'Need for Speed Underground 2 Editor - Versione 1.0.5',
+        'success_inject': 'Auto inniettata con successo!',
+        'success_parts': 'Tutti i pezzi sbloccati!',
         'success_money': 'Soldi aggiornati!',
         'success_rename': 'Rinomina completata!',
         'rename_prompt': 'Nuovo nome (Max 7 car.):',
@@ -40,12 +42,14 @@ LANG = {
         'profiles': 'PROFILES FOUND:',
         'select_car': 'SELECT CAR:',
         'inject_btn': 'INJECT CAR',
+        'unlock_parts': 'UNLOCK SPECIAL PARTS',
         'money': 'MONEY:',
         'patch_btn': 'PATCH MONEY',
         'rename_btn': 'RENAME PROFILE (SAFE)',
         'backup_btn': 'BACKUP TO DESKTOP',
-        'footer': 'Need for Speed Underground 2 Editor - Version 1.0.4',
+        'footer': 'Need for Speed Underground 2 Editor - Version 1.0.5',
         'success_inject': 'Car injected successfully!',
+        'success_parts': 'All parts unlocked!',
         'success_money': 'Money updated!',
         'success_rename': 'Rename completed!',
         'rename_prompt': 'New name (Max 7 chars):',
@@ -54,7 +58,7 @@ LANG = {
     }
 }
 
-# --- DATABASE AUTO (POPOLALO CON I TUOI DATI TESTATI) ---
+# --- DATABASE AUTO ---
 CAR_DATABASE = {
     "Mitsubishi Lancer Evo VIII": [
         {"off": 0x5870, "hex": "5C 1B 9A 43 01 00 00 00 04 00 00 00 01 00 00 00 00 00 00 00 F6 EF D2 09 10 C2 B1 C2 AF 42 56 35 90 AC AF D8 00 00 00 00 00 00 00 00 8A C9 F0 8F A1 C5 74 20 85 E2 70 0B C8 82 4B 99 26 15 F4 8F 30 A0 51 8F 89 7E 3B 8F BA 9A 26 58 D2 20 38 56 26 1F B4 92 D9 43 05 C6 BE A6 9D 34 3A A5 05 53 0D 14 29 B4 49 C4 66 52 FC 14 AE 9F 0D 7F 24 0B 40 28 23 70 00 00 00 00 00 00 00 00 43 00 DD 8E CD 2A BD C0 E9 11 37 6E E9 11 37 6E F9 A8 AD 6F F9 A8 AD 6F"},
@@ -312,19 +316,27 @@ CAR_DATABASE = {
         {"off": 0xC2D0, "hex": "00 00 00 0F 5A 78 00 00 01 01 01 00 00 00 00 00"},
         {"off": 0xC3B0, "hex": "00 00 00 00 00 00 00 00 00 00 00 B0 BD 00 00 05 CE 04 00 48 85 81 00 C7 A6 79 00 D5 80 06 00 2C CE DE 00 00 00 00 00 00 00 00 00 00 00 00 00 00"}
     ],
-
 }
+
+# --- DATABASE PEZZI (8 BLOCCHI) ---
+PARTS_DATA = [
+        {"off": 0x5CD0, "hex": "00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00"},
+        {"off": 0x5DF0, "hex": "00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00"},
+        {"off": 0x5F00, "hex": "00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00"},
+        {"off": 0x64C0, "hex": "00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00"},
+        {"off": 0x6CB0, "hex": "00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00"},
+        {"off": 0x74A0, "hex": "00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF"},
+        {"off": 0x7C90, "hex": "00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00"},
+        {"off": 0x7DB0, "hex": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 FF FF FF FF FF FF"},
+    ]
 
 class NFSU2App:
     def __init__(self, root):
         self.root = root
         self.cur_lang = 'IT'
         self.all_saves = {}
-        
-        # Carica Icona
         try: self.root.iconbitmap(self.get_path("icona.ico"))
         except: pass
-
         self.setup_ui()
         self.full_scan()
 
@@ -334,16 +346,14 @@ class NFSU2App:
 
     def setup_ui(self):
         self.root.title(LANG[self.cur_lang]['title'])
-        self.root.geometry("480x940")
+        self.root.geometry("480x825")
         self.root.configure(bg="#0f0f0f")
 
-        # Selettore Lingua in alto a destra
         lang_frame = tk.Frame(self.root, bg="#0f0f0f")
         lang_frame.pack(anchor="ne", padx=10, pady=5)
         tk.Button(lang_frame, text="IT", command=lambda: self.change_lang('IT'), bg="#333", fg="white", font=("Arial", 8)).pack(side="left", padx=2)
         tk.Button(lang_frame, text="EN", command=lambda: self.change_lang('EN'), bg="#333", fg="white", font=("Arial", 8)).pack(side="left", padx=2)
 
-        # Immagine Header
         try:
             img = Image.open(self.get_path("header.png")).resize((420, 180))
             self.header_img = ImageTk.PhotoImage(img)
@@ -351,25 +361,22 @@ class NFSU2App:
         except:
             tk.Label(self.root, text="NFSU2 MASTER", fg="#00FF41", bg="#0f0f0f", font=("Impact", 28)).pack(pady=10)
 
-        # UI Components con refresh dinamico
         self.lbl_profiles = tk.Label(self.root, text=LANG[self.cur_lang]['profiles'], fg="#00FF41", bg="#0f0f0f", font=("bold", 9))
         self.lbl_profiles.pack()
-        
         self.listbox = tk.Listbox(self.root, bg="#1a1a1a", fg="#00FF41", font=("Consolas", 11), height=8)
         self.listbox.pack(pady=5, padx=30, fill="x")
 
         self.lbl_car = tk.Label(self.root, text=LANG[self.cur_lang]['select_car'], fg="white", bg="#0f0f0f")
         self.lbl_car.pack()
-        
         self.car_cb = ttk.Combobox(self.root, values=list(CAR_DATABASE.keys()), state="readonly")
         self.car_cb.pack(pady=5, padx=60, fill="x")
         if list(CAR_DATABASE.keys()): self.car_cb.set(list(CAR_DATABASE.keys())[0])
 
         self.btn_inject = self.add_btn(LANG[self.cur_lang]['inject_btn'], self.apply_car, "#C0392B", "white")
-        
+        self.btn_unlock = self.add_btn(LANG[self.cur_lang]['unlock_parts'], self.apply_parts_unlock, "#8E44AD", "white")
+
         self.lbl_money = tk.Label(self.root, text=LANG[self.cur_lang]['money'], fg="white", bg="#0f0f0f")
         self.lbl_money.pack(pady=5)
-        
         self.money_entry = tk.Entry(self.root, justify="center", bg="#1a1a1a", fg="#00FF41", font=("Consolas", 20))
         self.money_entry.insert(0, "999999")
         self.money_entry.pack(pady=5, padx=100, fill="x")
@@ -392,6 +399,7 @@ class NFSU2App:
         self.lbl_profiles.config(text=LANG[lang_code]['profiles'])
         self.lbl_car.config(text=LANG[lang_code]['select_car'])
         self.btn_inject.config(text=LANG[lang_code]['inject_btn'])
+        self.btn_unlock.config(text=LANG[lang_code]['unlock_parts'])
         self.lbl_money.config(text=LANG[lang_code]['money'])
         self.btn_patch.config(text=LANG[lang_code]['patch_btn'])
         self.btn_rename.config(text=LANG[lang_code]['rename_btn'])
@@ -399,26 +407,58 @@ class NFSU2App:
         self.lbl_footer.config(text=LANG[lang_code]['footer'])
 
     def full_scan(self):
+        """ Ricerca globale in tutti i dischi e cartelle di sistema """
         self.listbox.delete(0, tk.END)
-        path = os.path.join(os.environ.get('LOCALAPPDATA', ''), 'NFS Underground 2')
-        if os.path.exists(path):
-            for d in os.listdir(path):
-                p = os.path.join(path, d, d)
-                if os.path.exists(p):
-                    self.all_saves[d] = p
-                    self.listbox.insert(tk.END, d)
+        self.all_saves = {}
+        
+        target_folders = ["NFS Underground 2", "Need for Speed Underground 2"]
+        search_roots = [
+            os.path.join(os.environ.get('LOCALAPPDATA', ''), 'VirtualStore'),
+            os.environ.get('LOCALAPPDATA', ''),
+            os.path.join(os.path.expanduser('~'), 'Documents'),
+            os.environ.get('ProgramFiles(x86)', 'C:\\Program Files (x86)'),
+            os.environ.get('ProgramFiles', 'C:\\Program Files')
+        ]
+        
+        # Aggiunta radici di tutti i dischi (C:, D:, E: ecc.)
+        drives = [f"{d}:\\" for d in "CDEFGHIJKLMNOPQRSTUVWXYZ" if os.path.exists(f"{d}:\\")]
+        search_roots.extend(drives)
+
+        for root_path in search_roots:
+            if not os.path.exists(root_path): continue
+            for target in target_folders:
+                full_base = os.path.join(root_path, target)
+                if os.path.exists(full_base):
+                    for folder in os.listdir(full_base):
+                        f_path = os.path.join(full_base, folder, folder)
+                        if os.path.exists(f_path) and folder not in self.all_saves:
+                            self.all_saves[folder] = f_path
+                            self.listbox.insert(tk.END, folder)
 
     def apply_car(self):
         idx = self.listbox.curselection()
         if not idx: return messagebox.showwarning("!", LANG[self.cur_lang]['err_select'])
         path = self.all_saves[self.listbox.get(idx)]
-        car = self.car_cb.get()
+        car_name = self.car_cb.get()
         try:
             with open(path, "rb+") as f:
-                for block in CAR_DATABASE[car]:
+                for block in CAR_DATABASE[car_name]:
                     f.seek(block["off"])
                     f.write(bytes.fromhex(block["hex"].replace(" ", "")))
             messagebox.showinfo("OK", LANG[self.cur_lang]['success_inject'])
+        except Exception as e: messagebox.showerror("Err", str(e))
+
+    def apply_parts_unlock(self):
+        idx = self.listbox.curselection()
+        if not idx: return messagebox.showwarning("!", LANG[self.cur_lang]['err_select'])
+        path = self.all_saves[self.listbox.get(idx)]
+        try:
+            with open(path, "rb+") as f:
+                for block in PARTS_DATA:
+                    if block["hex"]:
+                        f.seek(block["off"])
+                        f.write(bytes.fromhex(block["hex"].replace(" ", "")))
+            messagebox.showinfo("OK", LANG[self.cur_lang]['success_parts'])
         except Exception as e: messagebox.showerror("Err", str(e))
 
     def apply_money(self):
@@ -442,13 +482,11 @@ class NFSU2App:
             with open(path, "rb+") as f:
                 f.seek(0xD220 + 5)
                 f.write(new_name.encode().ljust(7, b'\x00'))
-            
             old_dir = os.path.dirname(path)
             parent = os.path.dirname(old_dir)
             new_file_path = os.path.join(old_dir, new_name)
             os.rename(path, new_file_path)
             os.rename(old_dir, os.path.join(parent, new_name))
-            
             self.full_scan()
             messagebox.showinfo("OK", LANG[self.cur_lang]['success_rename'])
         except Exception: messagebox.showerror("Err", LANG[self.cur_lang]['err_admin'])
