@@ -17,6 +17,7 @@ A lightweight, user-friendly Python utility designed to edit savegames in **Need
 * **Deep Scan**: Recursively searches for profile-specific files (save files with no extension) across multiple drives.
 * **Rename Option**
 * **VEHICLE SWAP !(SLOT 1)**
+* **UNLOCK PARTS OPTION
 
 ## 🛠️ How it Works
 
