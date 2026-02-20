@@ -18,30 +18,17 @@ A lightweight, user-friendly Python utility designed to edit savegames in **Need
 * **Rename Option**
 * **VEHICLE SWAP !(SLOT 1)**
 * **UNLOCK PARTS OPTION**
+* **SAVEGAME CAR EXTRACTION AND PATCHING**
+* **RACHEL'S CAR SWAP**
 
 ## 🛠️ How it Works
 
 The tool modifies the save file at a specific hex offset (**41322**) where NFSU2 stores the career credit value using a little-endian 4-byte integer.
 
-## 🚀 Installation & Usage
-
-1.  **Requirements**:
-    * Python 3.x
-    * `Pillow` (for the GUI images): `pip install Pillow`
-
-2.  **Running the script**:
-    ```bash
-    python nfsu2_profile_master.py
-    ```
-
-3.  **Using the App**:
-    * **Extract Saves**: Creates a folder named `ORIGINALSAVEGAMES` on your Desktop with your current files.
-    * **Patch Saves**: Enter the desired amount (up to 999,999,999) and click Patch.
-    * **Restore**: If something goes wrong, use this to revert to your original backups.
 
 ## 📦 Compiling to .exe
 
 If you want to create a standalone executable for Windows, use **PyInstaller**:
 
 ```bash
-pyinstaller --noconfirm --onefile --windowed --add-data "header.png;." --add-data "icona.ico;." --icon "icona.ico" --uac-admin nfsu2_profile_master.py
+pyinstaller --noconfirm --onefile --windowed --add-data "icona.ico;." --icon "icona.ico" --uac-admin nfsu2_profile_master.py
