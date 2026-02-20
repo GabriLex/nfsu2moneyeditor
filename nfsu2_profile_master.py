@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk, simpledialog
-from PIL import Image, ImageTk
+from tkinter import filedialog
 import struct
 import os
 import sys
 import shutil
 import ctypes
+import json
 
 # --- ELEVAZIONE PRIVILEGI ADMIN ---
 def is_admin():
@@ -28,7 +28,13 @@ LANG = {
         'patch_btn': 'PATCHA SOLDI',
         'rename_btn': 'RINOMINA PROFILO (SAFE)',
         'backup_btn': 'BACKUP SU DESKTOP',
-        'footer': 'Need for Speed Underground 2 Editor - Versione 1.0.5',
+        'extract_car_btn': 'ESTRAI AUTO DA SALVATAGGIO',
+        'apply_patch_btn': 'APPLICA PATCH AUTO (.json)',
+        'extract_name_prompt': 'Nome auto da salvare nella patch:',
+        'success_extract': 'Auto estratta e salvata come patch!',
+        'success_patch': 'Patch applicata con successo!',
+        'err_patch_invalid': 'File patch non valido o corrotto!',
+        'footer': 'Need for Speed Underground 2 Editor - Versione 1.0.6',
         'success_inject': 'Auto inniettata con successo!',
         'success_parts': 'Tutti i pezzi sbloccati!',
         'success_money': 'Soldi aggiornati!',
@@ -47,7 +53,13 @@ LANG = {
         'patch_btn': 'PATCH MONEY',
         'rename_btn': 'RENAME PROFILE (SAFE)',
         'backup_btn': 'BACKUP TO DESKTOP',
-        'footer': 'Need for Speed Underground 2 Editor - Version 1.0.5',
+        'extract_car_btn': 'EXTRACT CAR FROM SAVE',
+        'apply_patch_btn': 'APPLY CAR PATCH (.json)',
+        'extract_name_prompt': 'Car name to save in patch:',
+        'success_extract': 'Car extracted and saved as patch!',
+        'success_patch': 'Patch applied successfully!',
+        'err_patch_invalid': 'Invalid or corrupted patch file!',
+        'footer': 'Need for Speed Underground 2 Editor - Version 1.0.6',
         'success_inject': 'Car injected successfully!',
         'success_parts': 'All parts unlocked!',
         'success_money': 'Money updated!',
@@ -108,14 +120,14 @@ CAR_DATABASE = {
         {"off": 0xC2D0, "hex": "00 00 00 B7 D4 6F 00 00 01 01 01 00 00 00 00 00"},
         {"off": 0xC3B0, "hex": "00 00 00 00 00 00 00 00 00 00 00 CA E0 00 00 FC 03 04 00 D8 58 7A 00 EF 7B 72 00 B0 1D 3F 00 BF F9 B0 00 00 00 00 00 00 00 00 00 00 00 00 00 00"}
     ],
-    # "Nissan 350Z RACHEL MOD (TEST)": [
-  #      {"off": 0x5870, "hex": "00 00 00 00 01 00 00 00 04 00 00 00 01 00 00 00 00 00 00 00 D7 FA 93 02 91 C1 81 BC F0 CF B6 1A B1 15 A3 DF 00 00 00 00 00 00 00 00 CB A5 9C 75 02 2A 9C BB 85 E2 70 0B 29 16 69 CF 67 F1 9F 75 91 04 79 2A EA E2 62 2A 5B 9B B8 5A 53 11 4C 56 07 CC C8 81 DA 8C AF 97 5F A7 2F 37 1B 52 1A 42 0E 5D D3 85 EA D5 3B 09 BD 5A 25 31 8E 60 DD CA E1 39 F8 26 00 00 00 00 00 00 00 00 44 49 87 60 EE 93 B0 C7 0A 7B 2A 75 0A 7B 2A 75 1A 12 A1 76 1A 12 A1 76 00 00 00 00 6C DC EC 66 68 8E A3 53 02 81 4A C6 05 47 C9 FA 05 47 C9 FA AD 09 64 45"},
-  #      {"off": 0x5950, "hex": "00 00 00 00 00 00 00 00 25 EC 3D 5B 16 CD 4C CC 37 BE 4E 50 D9 8B 9C E7 EC CA DF 36 69 15 61 40 9C 5F 5A 0F 32 4A 86 2B 65 54 01 F8 22 E1 0A D0 75 A2 3D 94 93 43 EE 98 00 00 00 00 00 00 00 00"},
-  #      {"off": 0x5B20, "hex": "20 E8 F9 03 00 00 00 00 00 00 00 00 8F 3C 41 E7"},
-  #      {"off": 0xAD80, "hex": "90 96 B0 00 DC 7E 9C C2 3D 27 B9 43 FF B4 E3 3D 00 00 00 00 00 FF 00 00 80 BF 00 00 00 00 00 00"},
-  #      {"off": 0xC2D0, "hex": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"},
-  #      {"off": 0xC3B0, "hex": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"}
-  # ],
+     "Nissan 350Z RACHEL MOD (TEST)": [
+        {"off": 0x5870, "hex": "AA 52 9E 43 01 00 00 00 04 00 00 00 01 00 00 00 00 00 00 00 D1 C6 0A 00 CB 19 19 62 AA 05 77 C8 2B 7C F6 22 00 00 00 00 00 00 00 00 85 C1 07 26 3E 0E 15 7E 85 E2 70 0B 23 4F F9 02 59 4A 7E 11 8B 97 47 E8 E4 75 31 E8 6F 85 F0 45 F8 C8 A4 4C 8C 9D D4 5D C1 49 1C 57 A1 E1 06 53 6E FA 54 FA C1 0F 63 45 7D 30 F6 B1 B0 07 2B F1 C1 34 9D 5B 74 94 B2 CF 00 00 00 00 00 00 00 00 7E C8 6A C7 68 FA 03 0B 96 86 57 C6 84 E1 7D B8 21 11 5F 02 21 11 5F 02 00 00 00 00 E6 42 40 AA 68 8E A3 53 7C E7 9D 09 05 47 C9 FA 05 47 C9 FA AD 09 64 45"},
+        {"off": 0x5950, "hex": "00 00 00 00 00 00 00 00 DF 6E 36 B5 D0 69 11 72 B1 AB 35 D9 D3 D2 15 2D 26 F1 81 2B 23 B2 25 E6 96 93 B2 6D 2D 50 D7 56 C0 19 73 8D 3D 69 03 89 F0 2D 47 6C 6E F9 6E 3C 40 F4 B3 64 00 00 00 00"},
+        {"off": 0x5B20, "hex": "20 E8 F9 03 00 00 00 00 00 00 00 00 49 3E D1 E8"},
+        {"off": 0xAD80, "hex": "8C 9A 31 01 04 C2 23 44 22 95 CD C2 28 57 7C 41 00 00 00 00 C0 62 9F 43 E9 44 01 00 00 00 00 00"},
+      {"off": 0xC2D0, "hex": "00 00 00 B7 D4 6F 00 00 01 01 01 00 00 00 00 00"},
+       {"off": 0xC3B0, "hex": "00 00 00 00 00 00 00 00 00 00 00 15 61 0A 00 0D 44 0E 00 05 E6 71 00 41 BC 7C 00 BB 99 0B 00 D0 39 BB 00 00 00 00 00 00 00 00 00 00 00 00 00 00"}
+   ],
     "Nissan Skyline R34": [
       {"off": 0x5870, "hex": "27 EA 88 43 01 00 00 00 04 00 00 00 01 00 00 00 00 00 00 00 5E 37 48 BE 78 EA 23 19 17 01 73 69 F8 3D 7A B3 00 00 00 00 00 00 00 00 F2 9F 09 D3 09 69 A8 C6 85 E2 70 0B 30 3E 66 8C 8E EB 0C D3 98 43 85 35 F1 21 6F 35 22 B8 D0 59 3A 31 E0 C2 8E 36 5B A7 41 48 8F 6F 26 C4 47 36 A2 BC AC 67 75 18 B3 5D B1 C9 6B C9 64 C7 53 F7 75 77 6A B9 A8 2D 28 E7 00 00 00 00 00 00 00 00 AB 04 67 38 35 BC 87 9B 51 A3 01 49 51 A3 01 49 61 3A 78 4A 61 3A 78 4A 00 00 00 00 B3 04 C4 3A 68 8E A3 53 49 A9 21 9A 05 47 C9 FA 05 47 C9 FA AD 09 64 45"},
         {"off": 0x5950, "hex": "00 00 00 00 00 00 00 00 CC 58 6C 21 BD F0 54 5D FE 88 7D 7B E0 F8 3B 2D D3 D8 6C 30 10 39 69 D1 23 F8 66 C1 79 20 1B 93 8C F3 30 52 09 E6 9E 74 3C 44 52 CB E4 BD BC B8 00 00 00 00 00 00 00 00"},
@@ -335,82 +347,805 @@ class NFSU2App:
         self.root = root
         self.cur_lang = 'IT'
         self.all_saves = {}
+        self._header_img = None  # terrà il PhotoImage per evitare GC
         try: self.root.iconbitmap(self.get_path("icona.ico"))
         except: pass
         self.setup_ui()
         self.full_scan()
+        # carica immagine online in background dopo che la UI è montata
+        self.root.after(200, self._try_load_online_image)
 
     def get_path(self, rel):
         if hasattr(sys, '_MEIPASS'): return os.path.join(sys._MEIPASS, rel)
         return os.path.join(os.path.abspath("."), rel)
 
+    def _try_load_online_image(self):
+        """
+        Tenta di scaricare uno screenshot di NFSU2 da Wikipedia/archivi pubblici
+        e lo usa come sfondo semi-trasparente nell'header canvas.
+        Fallisce silenziosamente se non c'è connessione.
+        """
+        import urllib.request, tempfile, os
+        # Immagine pubblica: copertina ufficiale NFSU2 da Wikimedia Commons
+        url = ("https://upload.wikimedia.org/wikipedia/en/thumb/5/57/"
+               "NFSU2box.jpg/220px-NFSU2box.jpg")
+        try:
+            # Prova con PIL se disponibile (opzionale)
+            from PIL import Image, ImageTk, ImageDraw, ImageFilter
+            tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+            tmp.close()
+            urllib.request.urlretrieve(url, tmp.name)
+            img = Image.open(tmp.name).resize((510, 130), Image.LANCZOS)
+            # scurisci e applica tono blu
+            overlay = Image.new("RGBA", img.size, (4, 6, 30, 180))
+            img = img.convert("RGBA")
+            img = Image.alpha_composite(img, overlay)
+            self._header_img = ImageTk.PhotoImage(img.convert("RGB"))
+            # sovrascrivi sfondo header canvas
+            if hasattr(self, '_header_canvas'):
+                self._header_canvas.create_image(
+                    0, 0, anchor="nw", image=self._header_img
+                )
+                # ridisegna testo sopra l'immagine
+                self._redraw_header_text(self._header_canvas)
+            os.unlink(tmp.name)
+        except Exception:
+            pass  # fallisce silenziosamente, il Canvas puro rimane
+
+    def _redraw_header_text(self, hdr):
+        """Ridisegna testo e decorazioni sull'header canvas."""
+        W = 510
+        # linea neon superiore
+        for off, col in [(0, "#003060"), (1, "#006AB0"), (2, self.NEON_BLU)]:
+            hdr.create_line(0, off, W, off, fill=col, width=1)
+        cx = W // 2
+        for dx, col in [(-2, "#00304A"), (-1, "#005580"), (0, self.NEON_BLU)]:
+            hdr.create_text(cx+dx, 38, text="NEED FOR SPEED",
+                            font=("Impact", 28), fill=col, anchor="center")
+        hdr.create_text(cx, 72, text="UNDERGROUND 2",
+                        font=("Impact", 36), fill="white", anchor="center")
+        hdr.create_rectangle(40, 87, W-40, 90, fill=self.NEON_BLU, outline="")
+        hdr.create_rectangle(40, 91, W-40, 92, fill=self.NEON_VIO, outline="")
+        hdr.create_text(cx, 108, text="PROFILES  MASTER",
+                        font=("Consolas", 11, "bold"), fill=self.NEON_VIO, anchor="center")
+        hdr.create_text(W-10, 124, text="by GabriLex",
+                        font=("Consolas", 7), fill=self.TXT_DIM, anchor="e")
+
+    # ═══════════════════════════════════════════════════════════
+    #  PALETTE  — fedele allo screenshot del pause menu NFSU2
+    # ═══════════════════════════════════════════════════════════
+    BG        = "#0A0C12"   # sfondo scuro quasi-nero con tono bluastro
+    PANEL_BG  = "#0D1018"   # pannello interno leggermente più chiaro
+    BORDER    = "#4A5568"   # bordo argento/grigio del pannello (come in-game)
+    BORDER_LT = "#8090A8"   # bordo highlight superiore (bordo più chiaro)
+    SEL_GRN   = "#78FF00"   # verde-lime brillante della selezione attiva
+    SEL_DARK  = "#1A3000"   # sfondo del tasto selezionato
+    SEL_RING  = "#4CAF00"   # anello esterno selezione
+    TXT_WHITE = "#E8EEF8"   # testo bianco principale
+    TXT_GREY  = "#6A7A8A"   # testo dimmed / etichette secondarie
+    TXT_SEL   = "#CCFF66"   # testo su selezione attiva
+    GOLD      = "#D4A820"   # dorato per soldi / accento caldo
+    BTN_NORM  = "#141820"   # sfondo pulsante normale
+    BTN_HOV   = "#1E2838"   # sfondo pulsante hover
+    LINE_SEP  = "#252D3A"   # separatore sezione
+
     def setup_ui(self):
         self.root.title(LANG[self.cur_lang]['title'])
-        self.root.geometry("480x825")
-        self.root.configure(bg="#0f0f0f")
+        W, H = 520, 860
+        self.root.geometry(f"{W}x{H}")
+        self.root.configure(bg=self.BG)
+        self.root.resizable(False, False)
 
-        lang_frame = tk.Frame(self.root, bg="#0f0f0f")
-        lang_frame.pack(anchor="ne", padx=10, pady=5)
-        tk.Button(lang_frame, text="IT", command=lambda: self.change_lang('IT'), bg="#333", fg="white", font=("Arial", 8)).pack(side="left", padx=2)
-        tk.Button(lang_frame, text="EN", command=lambda: self.change_lang('EN'), bg="#333", fg="white", font=("Arial", 8)).pack(side="left", padx=2)
+        # ══════════════════════════════════════════════════════
+        #  SFONDO — texture scura con vignette laterali
+        # ══════════════════════════════════════════════════════
+        bg_cv = tk.Canvas(self.root, width=W, height=H,
+                          bg=self.BG, highlightthickness=0)
+        bg_cv.place(x=0, y=0)
+        # vignette laterali scure
+        for x in range(60):
+            alpha = int(20 * (1 - x / 60))
+            c = f"#{alpha:02x}{alpha:02x}{alpha+4:02x}"
+            bg_cv.create_rectangle(x, 0, x+1, H, fill=c, outline="")
+            bg_cv.create_rectangle(W-x-1, 0, W-x, H, fill=c, outline="")
 
-        try:
-            img = Image.open(self.get_path("header.png")).resize((420, 180))
-            self.header_img = ImageTk.PhotoImage(img)
-            tk.Label(self.root, image=self.header_img, bg="#0f0f0f").pack(pady=5)
-        except:
-            tk.Label(self.root, text="NFSU2 MASTER", fg="#00FF41", bg="#0f0f0f", font=("Impact", 28)).pack(pady=10)
+        # ══════════════════════════════════════════════════════
+        #  HEADER CANVAS — stile "pausa" NFSU2
+        # ══════════════════════════════════════════════════════
+        HDR_H = 110
+        hdr = tk.Canvas(self.root, width=W, height=HDR_H,
+                        bg=self.BG, highlightthickness=0)
+        hdr.pack(fill="x")
+        self._header_canvas = hdr
 
-        self.lbl_profiles = tk.Label(self.root, text=LANG[self.cur_lang]['profiles'], fg="#00FF41", bg="#0f0f0f", font=("bold", 9))
-        self.lbl_profiles.pack()
-        self.listbox = tk.Listbox(self.root, bg="#1a1a1a", fg="#00FF41", font=("Consolas", 11), height=8)
-        self.listbox.pack(pady=5, padx=30, fill="x")
+        # pannello header con bordo argento (stile pause panel)
+        self._panel_rect(hdr, 14, 8, W-14, HDR_H-6)
 
-        self.lbl_car = tk.Label(self.root, text=LANG[self.cur_lang]['select_car'], fg="white", bg="#0f0f0f")
-        self.lbl_car.pack()
-        self.car_cb = ttk.Combobox(self.root, values=list(CAR_DATABASE.keys()), state="readonly")
-        self.car_cb.pack(pady=5, padx=60, fill="x")
-        if list(CAR_DATABASE.keys()): self.car_cb.set(list(CAR_DATABASE.keys())[0])
+        # testo "NEED FOR SPEED" piccolo sopra
+        hdr.create_text(W//2, 32, text="NEED FOR SPEED",
+                        font=("Impact", 14), fill=self.TXT_GREY, anchor="center")
+        # "UNDERGROUND 2" grande e bianco
+        hdr.create_text(W//2, 60, text="UNDERGROUND 2",
+                        font=("Impact", 34), fill=self.TXT_WHITE, anchor="center")
+        # sottolineatura verde-lime (come il bordo di selezione attiva)
+        for y_off, col, h in [(75, self.SEL_GRN, 2),
+                               (78, self.SEL_RING, 1)]:
+            hdr.create_rectangle(60, y_off, W-60, y_off+h,
+                                 fill=col, outline="")
+        # "PROFILES MASTER" sotto la linea
+        hdr.create_text(W//2, 92, text="PROFILES  MASTER",
+                        font=("Impact", 13), fill=self.SEL_GRN, anchor="center")
+        # "by GabriLex" a destra
+        hdr.create_text(W-20, HDR_H-10, text="by GabriLex",
+                        font=("Consolas", 7), fill=self.TXT_GREY, anchor="e")
 
-        self.btn_inject = self.add_btn(LANG[self.cur_lang]['inject_btn'], self.apply_car, "#C0392B", "white")
-        self.btn_unlock = self.add_btn(LANG[self.cur_lang]['unlock_parts'], self.apply_parts_unlock, "#8E44AD", "white")
+        # ── lang switch ────────────────────────────────────────
+        lang_fr = tk.Frame(self.root, bg=self.BG)
+        lang_fr.place(x=W-82, y=10)
+        for code in ("IT", "EN"):
+            b = tk.Button(lang_fr, text=code,
+                          command=lambda c=code: self.change_lang(c),
+                          bg=self.BTN_NORM, fg=self.TXT_GREY,
+                          font=("Impact", 9),
+                          relief="flat", padx=6, pady=1, cursor="hand2",
+                          activebackground=self.SEL_GRN,
+                          activeforeground="#000",
+                          highlightthickness=1,
+                          highlightbackground=self.BORDER)
+            b.pack(side="left", padx=1)
+            self._bind_hover(b, self.BTN_NORM, self.BTN_HOV)
 
-        self.lbl_money = tk.Label(self.root, text=LANG[self.cur_lang]['money'], fg="white", bg="#0f0f0f")
-        self.lbl_money.pack(pady=5)
-        self.money_entry = tk.Entry(self.root, justify="center", bg="#1a1a1a", fg="#00FF41", font=("Consolas", 20))
+        # ══════════════════════════════════════════════════════
+        #  BODY
+        # ══════════════════════════════════════════════════════
+        body = tk.Frame(self.root, bg=self.BG)
+        body.pack(fill="both", expand=True, padx=14, pady=(2, 0))
+
+        # ─── PROFILI ──────────────────────────────────────────
+        self.lbl_profiles = self._section_label(
+            body, LANG[self.cur_lang]['profiles'])
+
+        lb_outer = tk.Canvas(body, bg=self.BG, highlightthickness=0, height=122)
+        lb_outer.pack(fill="x", pady=(2, 6))
+        lb_outer.update_idletasks()
+        self._panel_rect_widget(lb_outer, 0, 0, 492, 120)
+
+        lb_inner = tk.Frame(lb_outer, bg=self.PANEL_BG)
+        lb_outer.create_window(3, 3, anchor="nw", window=lb_inner,
+                               width=486, height=114)
+        sb = tk.Scrollbar(lb_inner, bg=self.BORDER, troughcolor=self.BG,
+                          relief="flat", width=6)
+        self.listbox = tk.Listbox(
+            lb_inner, bg=self.PANEL_BG, fg=self.TXT_WHITE,
+            font=("Impact", 11), height=5,
+            selectbackground=self.SEL_DARK,
+            selectforeground=self.SEL_GRN,
+            activestyle="none", relief="flat", borderwidth=0,
+            highlightthickness=0, yscrollcommand=sb.set
+        )
+        sb.config(command=self.listbox.yview)
+        self.listbox.pack(side="left", fill="both", expand=True, padx=4, pady=4)
+        sb.pack(side="right", fill="y", pady=4)
+
+        # ─── AUTO ─────────────────────────────────────────────
+        self.lbl_car = self._section_label(
+            body, LANG[self.cur_lang]['select_car'])
+
+        # ── Dropdown auto CUSTOM a tema ────────────────────────
+        cb_outer = tk.Frame(body, bg=self.BORDER,
+                            highlightthickness=1,
+                            highlightbackground=self.BORDER_LT,
+                            padx=1, pady=1)
+        cb_outer.pack(fill="x", pady=(2, 4))
+
+        # Frame che simula il combobox
+        cb_display = tk.Frame(cb_outer, bg=self.PANEL_BG)
+        cb_display.pack(fill="x")
+
+        self._car_var = tk.StringVar()
+        car_keys = list(CAR_DATABASE.keys())
+        if car_keys:
+            self._car_var.set(car_keys[0])
+
+        self._cb_label = tk.Label(
+            cb_display, textvariable=self._car_var,
+            bg=self.PANEL_BG, fg=self.TXT_WHITE,
+            font=("Impact", 11), anchor="w", padx=8, pady=6,
+            cursor="hand2"
+        )
+        self._cb_label.pack(side="left", fill="x", expand=True)
+
+        # Freccia dropdown stile NFSU2
+        self._cb_arrow = tk.Label(
+            cb_display, text="  v  ",
+            bg=self.SEL_GRN, fg="#000",
+            font=("Impact", 10), cursor="hand2", padx=4
+        )
+        self._cb_arrow.pack(side="right")
+
+        # Bind click per aprire dropdown custom
+        for w in (self._cb_label, self._cb_arrow, cb_display):
+            w.bind("<Button-1>", lambda e: self._open_car_dropdown(car_keys))
+
+        # car_cb proxy per compatibilità con apply_car
+        class _CarProxy:
+            def __init__(self_, var): self_._v = var
+            def get(self_): return self_._v.get()
+            def set(self_, v): self_._v.set(v)
+        self.car_cb = _CarProxy(self._car_var)
+
+        # pulsante INJECT — versione "selezione attiva" verde
+        self.btn_inject = self._nfs_btn_selected(
+            body, LANG[self.cur_lang]['inject_btn'], self.apply_car)
+
+        # ─── CAR PATCH ────────────────────────────────────────
+        self._hsep(body)
+        self._section_label(body, "CAR PATCH")
+
+        patch_grid = tk.Frame(body, bg=self.BG)
+        patch_grid.pack(fill="x", pady=(3, 0))
+        patch_grid.columnconfigure(0, weight=1)
+        patch_grid.columnconfigure(1, weight=1)
+
+        self.btn_extract = self._nfs_grid_btn(
+            patch_grid, LANG[self.cur_lang]['extract_car_btn'],
+            self.extract_car_patch, 0, 0)
+        self.btn_apply_patch = self._nfs_grid_btn(
+            patch_grid, LANG[self.cur_lang]['apply_patch_btn'],
+            self.apply_car_patch, 0, 1)
+
+        self._hsep(body)
+
+        # ─── CHEATS ───────────────────────────────────────────
+        self._section_label(body, "CHEATS")
+
+        self.btn_unlock = self._nfs_btn(
+            body, LANG[self.cur_lang]['unlock_parts'], self.apply_parts_unlock)
+
+        money_row = tk.Frame(body, bg=self.BG)
+        money_row.pack(fill="x", pady=(6, 2))
+        self.lbl_money = tk.Label(
+            money_row, text=LANG[self.cur_lang]['money'],
+            bg=self.BG, fg=self.TXT_GREY, font=("Impact", 12)
+        )
+        self.lbl_money.pack(side="left", padx=(0, 8))
+
+        entry_outer = tk.Frame(money_row, bg=self.BORDER,
+                               highlightthickness=1,
+                               highlightbackground=self.GOLD,
+                               padx=1, pady=1)
+        entry_outer.pack(side="left", fill="x", expand=True)
+        self.money_entry = tk.Entry(
+            entry_outer, justify="center",
+            bg=self.PANEL_BG, fg=self.GOLD,
+            font=("Impact", 16), relief="flat",
+            insertbackground=self.GOLD
+        )
         self.money_entry.insert(0, "999999")
-        self.money_entry.pack(pady=5, padx=100, fill="x")
+        self.money_entry.pack(fill="x", ipady=4)
 
-        self.btn_patch = self.add_btn(LANG[self.cur_lang]['patch_btn'], self.apply_money, "#00FF41", "black")
-        self.btn_rename = self.add_btn(LANG[self.cur_lang]['rename_btn'], self.apply_rename, "white", "black")
-        self.btn_backup = self.add_btn(LANG[self.cur_lang]['backup_btn'], self.apply_backup, "#2980B9", "white")
+        self.btn_patch = self._nfs_btn(
+            body, LANG[self.cur_lang]['patch_btn'], self.apply_money,
+            accent=self.GOLD)
 
-        self.lbl_footer = tk.Label(self.root, text=LANG[self.cur_lang]['footer'], fg="#555", bg="#0f0f0f", font=("Arial", 8))
-        self.lbl_footer.pack(side="bottom", pady=10)
+        self._hsep(body)
+
+        # ─── TOOLS — griglia 2×2 stile menu NFSU2 ────────────
+        self._section_label(body, "TOOLS")
+
+        grid = tk.Frame(body, bg=self.BG)
+        grid.pack(fill="x", pady=(3, 0))
+        grid.columnconfigure(0, weight=1)
+        grid.columnconfigure(1, weight=1)
+
+        self.btn_rename = self._nfs_grid_btn(
+            grid, LANG[self.cur_lang]['rename_btn'],
+            self.apply_rename, 0, 0)
+        self.btn_backup = self._nfs_grid_btn(
+            grid, LANG[self.cur_lang]['backup_btn'],
+            self.apply_backup, 0, 1)
+
+        # ══════════════════════════════════════════════════════
+        #  FOOTER — stile barra NFSU2 ("Indietro" / "Continua")
+        # ══════════════════════════════════════════════════════
+        ftr_cv = tk.Canvas(self.root, width=W, height=32,
+                           bg=self.BG, highlightthickness=0)
+        ftr_cv.pack(fill="x", side="bottom")
+        # linea superiore grigio
+        ftr_cv.create_rectangle(0, 0, W, 1, fill=self.BORDER, outline="")
+        ftr_cv.create_rectangle(0, 1, W, 2, fill=self.BORDER_LT, outline="")
+        self._footer_cv = ftr_cv
+        self._footer_tid = ftr_cv.create_text(
+            W//2, 17, text=LANG[self.cur_lang]['footer'],
+            font=("Consolas", 8), fill=self.TXT_GREY, anchor="center"
+        )
+        self.lbl_footer = None
+
+    # ══════════════════════════════════════════════════════════
+    #  WIDGET HELPERS
+    # ══════════════════════════════════════════════════════════
+
+    def _panel_rect(self, canvas, x1, y1, x2, y2):
+        """Disegna un pannello stile NFSU2 su un Canvas:
+        riempimento scuro + bordo argento con highlight superiore."""
+        canvas.create_rectangle(x1+1, y1+1, x2-1, y2-1,
+                                 fill=self.PANEL_BG, outline="")
+        # bordo esterno grigio
+        canvas.create_rectangle(x1, y1, x2, y2,
+                                 fill="", outline=self.BORDER, width=1)
+        # highlight superiore e sinistro (bordo chiaro)
+        canvas.create_line(x1, y1, x2, y1, fill=self.BORDER_LT, width=1)
+        canvas.create_line(x1, y1, x1, y2, fill=self.BORDER_LT, width=1)
+
+    def _panel_rect_widget(self, canvas, x1, y1, x2, y2):
+        """Versione per canvas con coordinate già note."""
+        self._panel_rect(canvas, x1, y1, x2, y2)
+
+    def _section_label(self, parent, text):
+        """Label di sezione stile NFSU2: testo bianco maiuscolo con
+        piccolo segmento verde-lime a sinistra."""
+        frm = tk.Frame(parent, bg=self.BG)
+        frm.pack(fill="x", pady=(8, 1))
+        # barretta verde di sezione
+        tk.Frame(frm, bg=self.SEL_GRN, width=4, height=18).pack(
+            side="left", padx=(0, 6))
+        lbl = tk.Label(frm, text=text.upper(),
+                       bg=self.BG, fg=self.TXT_WHITE,
+                       font=("Impact", 13), anchor="w")
+        lbl.pack(side="left")
+        # linea grigio dimmed a destra
+        tk.Frame(frm, bg=self.LINE_SEP, height=1).pack(
+            side="left", fill="x", expand=True, padx=(8, 0), pady=8)
+        return lbl
+
+    def _nfs_btn(self, parent, text, cmd, accent=None):
+        """Pulsante normale — sfondo scuro, bordo grigio, testo bianco.
+        Hover: bordo più chiaro. accent colora il testo se fornito."""
+        fg = accent if accent else self.TXT_WHITE
+        outer = tk.Frame(parent,
+                         bg=self.BORDER,
+                         highlightthickness=1,
+                         highlightbackground=self.BORDER)
+        outer.pack(fill="x", pady=2)
+        inner = tk.Frame(outer, bg=self.BTN_NORM, padx=1, pady=1)
+        inner.pack(fill="x")
+        btn = tk.Button(
+            inner, text=text.upper(), command=cmd,
+            bg=self.BTN_NORM, fg=fg,
+            font=("Impact", 12),
+            relief="flat", pady=7, cursor="hand2",
+            activebackground=self.BTN_HOV,
+            activeforeground=fg, borderwidth=0
+        )
+        btn.pack(fill="x")
+        def on_enter(e):
+            btn.config(bg=self.BTN_HOV)
+            outer.config(highlightbackground=self.BORDER_LT)
+        def on_leave(e):
+            btn.config(bg=self.BTN_NORM)
+            outer.config(highlightbackground=self.BORDER)
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        return btn
+
+    def _nfs_btn_selected(self, parent, text, cmd):
+        """Pulsante 'selezione attiva' — verde brillante con anello
+        e sfondo scuro, identico al tasto evidenziato nel gioco."""
+        outer = tk.Frame(parent,
+                         bg=self.SEL_GRN,
+                         highlightthickness=2,
+                         highlightbackground=self.SEL_RING)
+        outer.pack(fill="x", pady=3)
+        inner = tk.Frame(outer, bg=self.SEL_DARK, padx=2, pady=2)
+        inner.pack(fill="x")
+        btn = tk.Button(
+            inner, text=text.upper(), command=cmd,
+            bg=self.SEL_DARK, fg=self.SEL_GRN,
+            font=("Impact", 13),
+            relief="flat", pady=8, cursor="hand2",
+            activebackground="#0D2200",
+            activeforeground=self.SEL_GRN, borderwidth=0
+        )
+        btn.pack(fill="x")
+        def on_enter(e):
+            btn.config(bg="#0D2200")
+            outer.config(bg=self.TXT_SEL)
+        def on_leave(e):
+            btn.config(bg=self.SEL_DARK)
+            outer.config(bg=self.SEL_GRN)
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        return btn
+
+    def _nfs_grid_btn(self, parent, text, cmd, row, col):
+        """Pulsante per griglia 2×2 — stile NFSU2 bordo grigio."""
+        outer = tk.Frame(parent,
+                         bg=self.BORDER,
+                         highlightthickness=1,
+                         highlightbackground=self.BORDER)
+        outer.grid(row=row, column=col, padx=3, pady=3, sticky="nsew")
+        btn = tk.Button(
+            outer, text=text.upper(), command=cmd,
+            bg=self.BTN_NORM, fg=self.TXT_WHITE,
+            font=("Impact", 10),
+            relief="flat", pady=10, cursor="hand2",
+            wraplength=220,
+            activebackground=self.BTN_HOV,
+            activeforeground=self.SEL_GRN,
+            borderwidth=0
+        )
+        btn.pack(fill="both", expand=True)
+        def on_enter(e):
+            btn.config(bg=self.BTN_HOV, fg=self.SEL_GRN)
+            outer.config(bg=self.BORDER_LT)
+        def on_leave(e):
+            btn.config(bg=self.BTN_NORM, fg=self.TXT_WHITE)
+            outer.config(bg=self.BORDER)
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        return btn
+
+    def _hsep(self, parent):
+        """Separatore orizzontale doppio stile NFSU2."""
+        tk.Frame(parent, bg=self.BORDER, height=1).pack(
+            fill="x", pady=(8, 0))
+        tk.Frame(parent, bg=self.LINE_SEP, height=1).pack(
+            fill="x", pady=(1, 0))
+
+    def _bind_hover(self, widget, normal_bg, hover_bg):
+        widget.bind("<Enter>", lambda e: widget.config(bg=hover_bg))
+        widget.bind("<Leave>", lambda e: widget.config(bg=normal_bg))
+
+    # ══════════════════════════════════════════════════════════
+    #  POPUP A TEMA — sostituiscono messagebox / simpledialog
+    # ══════════════════════════════════════════════════════════
+
+    def _nfs_popup(self, title, message, mode="info"):
+        """
+        Finestra popup a tema NFSU2.
+        mode: 'info' | 'warn' | 'error' | 'yesno'
+        Ritorna True/False se mode=='yesno', altrimenti None.
+        """
+        result = [None]
+        popup = tk.Toplevel(self.root)
+        popup.withdraw()
+        popup.title("")
+        popup.resizable(False, False)
+        popup.configure(bg=self.BG)
+        popup.transient(self.root)
+        popup.grab_set()
+
+        # rimuovi decorazioni di sistema se possibile
+        try: popup.overrideredirect(True)
+        except: pass
+
+        W_P = 400
+
+        # ── canvas bordo pannello ──
+        top_cv = tk.Canvas(popup, width=W_P, height=50,
+                           bg=self.BG, highlightthickness=0)
+        top_cv.pack(fill="x")
+        self._panel_rect(top_cv, 4, 4, W_P-4, 46)
+
+        # colore e testo titolo in base al modo
+        accent = {
+            "info":  self.SEL_GRN,
+            "warn":  self.GOLD,
+            "error": "#FF3355",
+            "yesno": self.SEL_GRN,
+        }.get(mode, self.SEL_GRN)
+
+        top_cv.create_text(W_P//2, 26, text=title.upper(),
+                           font=("Impact", 16), fill=accent, anchor="center")
+
+        # ── messaggio ──
+        msg_fr = tk.Frame(popup, bg=self.PANEL_BG,
+                          highlightthickness=1,
+                          highlightbackground=self.BORDER)
+        msg_fr.pack(fill="x", padx=8, pady=(0, 6))
+        tk.Label(msg_fr, text=message,
+                 bg=self.PANEL_BG, fg=self.TXT_WHITE,
+                 font=("Impact", 11), wraplength=360,
+                 justify="center", pady=14).pack()
+
+        # ── pulsanti ──
+        btn_fr = tk.Frame(popup, bg=self.BG)
+        btn_fr.pack(fill="x", padx=8, pady=(0, 10))
+
+        def _close(val=None):
+            result[0] = val
+            popup.grab_release()
+            popup.destroy()
+
+        if mode == "yesno":
+            # SI — verde selezione
+            yes_out = tk.Frame(btn_fr, bg=self.SEL_GRN,
+                               highlightthickness=1,
+                               highlightbackground=self.SEL_RING)
+            yes_out.pack(side="left", expand=True, fill="x", padx=(0, 4))
+            yes_in = tk.Frame(yes_out, bg=self.SEL_DARK, padx=2, pady=2)
+            yes_in.pack(fill="x")
+            yes_btn = tk.Button(yes_in, text="SI", command=lambda: _close(True),
+                                bg=self.SEL_DARK, fg=self.SEL_GRN,
+                                font=("Impact", 13), relief="flat",
+                                pady=7, cursor="hand2", borderwidth=0,
+                                activebackground="#0D2200",
+                                activeforeground=self.SEL_GRN)
+            yes_btn.pack(fill="x")
+
+            # NO — bordo grigio normale
+            no_out = tk.Frame(btn_fr, bg=self.BORDER,
+                              highlightthickness=1,
+                              highlightbackground=self.BORDER)
+            no_out.pack(side="right", expand=True, fill="x", padx=(4, 0))
+            no_btn = tk.Button(no_out, text="NO", command=lambda: _close(False),
+                               bg=self.BTN_NORM, fg=self.TXT_WHITE,
+                               font=("Impact", 13), relief="flat",
+                               pady=7, cursor="hand2", borderwidth=0,
+                               activebackground=self.BTN_HOV,
+                               activeforeground=self.TXT_WHITE)
+            no_btn.pack(fill="x")
+            def _ye(e): yes_btn.config(bg="#0D2200"); yes_out.config(bg=self.TXT_SEL)
+            def _yl(e): yes_btn.config(bg=self.SEL_DARK); yes_out.config(bg=self.SEL_GRN)
+            yes_btn.bind("<Enter>", _ye); yes_btn.bind("<Leave>", _yl)
+            self._bind_hover(no_btn, self.BTN_NORM, self.BTN_HOV)
+        else:
+            ok_out = tk.Frame(btn_fr, bg=self.SEL_GRN,
+                              highlightthickness=1,
+                              highlightbackground=self.SEL_RING)
+            ok_out.pack(expand=True, fill="x")
+            ok_in = tk.Frame(ok_out, bg=self.SEL_DARK, padx=2, pady=2)
+            ok_in.pack(fill="x")
+            ok_btn = tk.Button(ok_in, text="OK", command=lambda: _close(True),
+                               bg=self.SEL_DARK, fg=self.SEL_GRN,
+                               font=("Impact", 13), relief="flat",
+                               pady=7, cursor="hand2", borderwidth=0,
+                               activebackground="#0D2200",
+                               activeforeground=self.SEL_GRN)
+            ok_btn.pack(fill="x")
+            def _oe(e): ok_btn.config(bg="#0D2200"); ok_out.config(bg=self.TXT_SEL)
+            def _ol(e): ok_btn.config(bg=self.SEL_DARK); ok_out.config(bg=self.SEL_GRN)
+            ok_btn.bind("<Enter>", _oe); ok_btn.bind("<Leave>", _ol)
+
+        popup.bind("<Return>", lambda e: _close(True))
+        popup.bind("<Escape>", lambda e: _close(False))
+
+        # centra rispetto alla finestra principale
+        popup.update_idletasks()
+        pw, ph = popup.winfo_reqwidth(), popup.winfo_reqheight()
+        rx = self.root.winfo_x() + (self.root.winfo_width() - pw) // 2
+        ry = self.root.winfo_y() + (self.root.winfo_height() - ph) // 2
+        popup.geometry(f"+{rx}+{ry}")
+        popup.deiconify()
+        popup.wait_window()
+        return result[0]
+
+    def _nfs_ask_string(self, title, prompt, initial=""):
+        """Input dialog a tema NFSU2. Ritorna la stringa o None."""
+        result = [None]
+        popup = tk.Toplevel(self.root)
+        popup.withdraw()
+        popup.title("")
+        popup.resizable(False, False)
+        popup.configure(bg=self.BG)
+        popup.transient(self.root)
+        popup.grab_set()
+        try: popup.overrideredirect(True)
+        except: pass
+
+        W_P = 400
+
+        top_cv = tk.Canvas(popup, width=W_P, height=50,
+                           bg=self.BG, highlightthickness=0)
+        top_cv.pack(fill="x")
+        self._panel_rect(top_cv, 4, 4, W_P-4, 46)
+        top_cv.create_text(W_P//2, 26, text=title.upper(),
+                           font=("Impact", 16), fill=self.SEL_GRN, anchor="center")
+
+        msg_fr = tk.Frame(popup, bg=self.PANEL_BG,
+                          highlightthickness=1, highlightbackground=self.BORDER)
+        msg_fr.pack(fill="x", padx=8, pady=(0, 4))
+        tk.Label(msg_fr, text=prompt,
+                 bg=self.PANEL_BG, fg=self.TXT_WHITE,
+                 font=("Impact", 11), pady=8).pack()
+
+        entry_wrap = tk.Frame(popup, bg=self.BORDER,
+                              highlightthickness=1,
+                              highlightbackground=self.BORDER_LT,
+                              padx=1, pady=1)
+        entry_wrap.pack(fill="x", padx=8, pady=(0, 8))
+        entry = tk.Entry(entry_wrap, justify="center",
+                         bg=self.PANEL_BG, fg=self.SEL_GRN,
+                         font=("Impact", 14), relief="flat",
+                         insertbackground=self.SEL_GRN)
+        entry.insert(0, initial)
+        entry.pack(fill="x", ipady=6)
+        entry.focus_set()
+        entry.select_range(0, tk.END)
+
+        btn_fr = tk.Frame(popup, bg=self.BG)
+        btn_fr.pack(fill="x", padx=8, pady=(0, 10))
+
+        def _confirm():
+            result[0] = entry.get()
+            popup.grab_release(); popup.destroy()
+        def _cancel():
+            popup.grab_release(); popup.destroy()
+
+        ok_out = tk.Frame(btn_fr, bg=self.SEL_GRN,
+                          highlightthickness=1, highlightbackground=self.SEL_RING)
+        ok_out.pack(side="left", expand=True, fill="x", padx=(0, 4))
+        ok_in = tk.Frame(ok_out, bg=self.SEL_DARK, padx=2, pady=2)
+        ok_in.pack(fill="x")
+        ok_btn = tk.Button(ok_in, text="OK", command=_confirm,
+                           bg=self.SEL_DARK, fg=self.SEL_GRN,
+                           font=("Impact", 12), relief="flat",
+                           pady=6, cursor="hand2", borderwidth=0,
+                           activebackground="#0D2200",
+                           activeforeground=self.SEL_GRN)
+        ok_btn.pack(fill="x")
+
+        can_out = tk.Frame(btn_fr, bg=self.BORDER,
+                           highlightthickness=1, highlightbackground=self.BORDER)
+        can_out.pack(side="right", expand=True, fill="x", padx=(4, 0))
+        can_btn = tk.Button(can_out, text="ANNULLA", command=_cancel,
+                            bg=self.BTN_NORM, fg=self.TXT_WHITE,
+                            font=("Impact", 12), relief="flat",
+                            pady=6, cursor="hand2", borderwidth=0,
+                            activebackground=self.BTN_HOV,
+                            activeforeground=self.TXT_WHITE)
+        can_btn.pack(fill="x")
+
+        def _oe(e): ok_btn.config(bg="#0D2200"); ok_out.config(bg=self.TXT_SEL)
+        def _ol(e): ok_btn.config(bg=self.SEL_DARK); ok_out.config(bg=self.SEL_GRN)
+        ok_btn.bind("<Enter>", _oe); ok_btn.bind("<Leave>", _ol)
+        self._bind_hover(can_btn, self.BTN_NORM, self.BTN_HOV)
+
+        popup.bind("<Return>", lambda e: _confirm())
+        popup.bind("<Escape>", lambda e: _cancel())
+
+        popup.update_idletasks()
+        pw, ph = popup.winfo_reqwidth(), popup.winfo_reqheight()
+        rx = self.root.winfo_x() + (self.root.winfo_width() - pw) // 2
+        ry = self.root.winfo_y() + (self.root.winfo_height() - ph) // 2
+        popup.geometry(f"+{rx}+{ry}")
+        popup.deiconify()
+        popup.wait_window()
+        return result[0]
+
+    def _open_car_dropdown(self, items):
+        """Dropdown IN-WINDOW: Frame sovrapposto con place() — niente Toplevel,
+        niente problemi di coordinate o grab su Windows."""
+
+        # Se già aperto, chiudi e basta
+        if hasattr(self, '_dd_frame') and self._dd_frame.winfo_exists():
+            self._dd_frame.destroy()
+            return
+
+        MAX_VISIBLE = 10
+        ROW_H       = 26   # px per riga Impact 11
+
+        # ── costruisci il frame overlay ──────────────────────────
+        dd = tk.Frame(self.root,
+                      bg=self.BORDER_LT,
+                      highlightthickness=1,
+                      highlightbackground=self.BORDER_LT)
+        self._dd_frame = dd
+
+        inner = tk.Frame(dd, bg=self.PANEL_BG)
+        inner.pack(fill="both", expand=True, padx=1, pady=1)
+
+        sb = tk.Scrollbar(inner, bg=self.BORDER, troughcolor=self.BG,
+                          relief="flat", width=6)
+        lb = tk.Listbox(
+            inner,
+            bg=self.PANEL_BG, fg=self.TXT_WHITE,
+            font=("Impact", 11),
+            selectbackground=self.SEL_DARK,
+            selectforeground=self.SEL_GRN,
+            activestyle="none", relief="flat", borderwidth=0,
+            highlightthickness=0,
+            yscrollcommand=sb.set,
+            height=min(len(items), MAX_VISIBLE)
+        )
+        sb.config(command=lb.yview)
+        lb.pack(side="left", fill="both", expand=True)
+        sb.pack(side="right", fill="y")
+
+        for item in items:
+            lb.insert(tk.END, item)
+
+        # evidenzia voce corrente
+        cur = self._car_var.get()
+        if cur in items:
+            i = items.index(cur)
+            lb.selection_set(i)
+            lb.see(i)
+
+        def _pick(e=None):
+            sel = lb.curselection()
+            if sel:
+                self._car_var.set(items[sel[0]])
+            _close()
+
+        def _close():
+            try:
+                dd.destroy()
+            except Exception:
+                pass
+
+        lb.bind("<ButtonRelease-1>", _pick)
+        lb.bind("<Return>",          _pick)
+        lb.bind("<Escape>",          lambda e: _close())
+
+        # click fuori dalla dropdown → chiudi
+        def _on_root_click(e):
+            if dd.winfo_exists():
+                wx, wy = dd.winfo_x(), dd.winfo_y()
+                ww, wh = dd.winfo_width(), dd.winfo_height()
+                if not (wx <= e.x <= wx+ww and wy <= e.y <= wy+wh):
+                    _close()
+        self.root.bind("<Button-1>", _on_root_click, add="+")
+
+        # ── calcola posizione relativa alla finestra root ─────────
+        self.root.update_idletasks()
+        self._cb_label.update_idletasks()
+
+        # coordinate del combobox rispetto alla root
+        rel_x = self._cb_label.winfo_x()
+        rel_y = self._cb_label.winfo_y()
+
+        # risali la gerarchia dei parent fino a root per sommare gli offset
+        w = self._cb_label
+        while w.master and w.master is not self.root:
+            w = w.master
+            rel_x += w.winfo_x()
+            rel_y += w.winfo_y()
+
+        cb_h = self._cb_label.winfo_height()
+        W_D  = self._cb_label.winfo_width() + self._cb_arrow.winfo_width() + 2
+        n    = min(len(items), MAX_VISIBLE)
+        H_D  = n * ROW_H + 6
+
+        drop_y = rel_y + cb_h + 2
+
+        # clamp: non uscire sotto la finestra
+        root_h = self.root.winfo_height()
+        if drop_y + H_D > root_h:
+            drop_y = rel_y - H_D - 2   # apri sopra
+        if drop_y < 0:
+            drop_y = rel_y + cb_h + 2  # fallback sotto
+
+        dd.place(x=rel_x, y=drop_y, width=W_D, height=H_D)
+        dd.lift()
+        lb.focus_set()
 
     def add_btn(self, text, command, bg, fg):
-        btn = tk.Button(self.root, text=text, command=command, bg=bg, fg=fg, font=("Arial", 10, "bold"), relief="flat", pady=7)
-        btn.pack(pady=4, padx=50, fill="x")
-        return btn
+        return self._nfs_btn(self.root, text, command)
 
     def change_lang(self, lang_code):
         self.cur_lang = lang_code
         self.root.title(LANG[lang_code]['title'])
-        self.lbl_profiles.config(text=LANG[lang_code]['profiles'])
-        self.lbl_car.config(text=LANG[lang_code]['select_car'])
-        self.btn_inject.config(text=LANG[lang_code]['inject_btn'])
-        self.btn_unlock.config(text=LANG[lang_code]['unlock_parts'])
+        if hasattr(self, 'lbl_profiles') and self.lbl_profiles:
+            self.lbl_profiles.config(text=LANG[lang_code]['profiles'].upper())
+        if hasattr(self, 'lbl_car') and self.lbl_car:
+            self.lbl_car.config(text=LANG[lang_code]['select_car'].upper())
         self.lbl_money.config(text=LANG[lang_code]['money'])
-        self.btn_patch.config(text=LANG[lang_code]['patch_btn'])
-        self.btn_rename.config(text=LANG[lang_code]['rename_btn'])
-        self.btn_backup.config(text=LANG[lang_code]['backup_btn'])
-        self.lbl_footer.config(text=LANG[lang_code]['footer'])
+        self.btn_inject.config(text=LANG[lang_code]['inject_btn'].upper())
+        self.btn_unlock.config(text=LANG[lang_code]['unlock_parts'].upper())
+        self.btn_patch.config(text=LANG[lang_code]['patch_btn'].upper())
+        self.btn_rename.config(text=LANG[lang_code]['rename_btn'].upper())
+        self.btn_backup.config(text=LANG[lang_code]['backup_btn'].upper())
+        self.btn_extract.config(text=LANG[lang_code]['extract_car_btn'].upper())
+        self.btn_apply_patch.config(text=LANG[lang_code]['apply_patch_btn'].upper())
+        if hasattr(self, '_footer_cv'):
+            self._footer_cv.itemconfig(
+                self._footer_tid, text=LANG[lang_code]['footer'])
 
     def full_scan(self):
         """ Ricerca globale in tutti i dischi e cartelle di sistema """
         self.listbox.delete(0, tk.END)
         self.all_saves = {}
-        
         target_folders = ["NFS Underground 2", "Need for Speed Underground 2"]
         search_roots = [
             os.path.join(os.environ.get('LOCALAPPDATA', ''), 'VirtualStore'),
@@ -419,11 +1154,8 @@ class NFSU2App:
             os.environ.get('ProgramFiles(x86)', 'C:\\Program Files (x86)'),
             os.environ.get('ProgramFiles', 'C:\\Program Files')
         ]
-        
-        # Aggiunta radici di tutti i dischi (C:, D:, E: ecc.)
         drives = [f"{d}:\\" for d in "CDEFGHIJKLMNOPQRSTUVWXYZ" if os.path.exists(f"{d}:\\")]
         search_roots.extend(drives)
-
         for root_path in search_roots:
             if not os.path.exists(root_path): continue
             for target in target_folders:
@@ -437,7 +1169,8 @@ class NFSU2App:
 
     def apply_car(self):
         idx = self.listbox.curselection()
-        if not idx: return messagebox.showwarning("!", LANG[self.cur_lang]['err_select'])
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
         path = self.all_saves[self.listbox.get(idx)]
         car_name = self.car_cb.get()
         try:
@@ -445,12 +1178,14 @@ class NFSU2App:
                 for block in CAR_DATABASE[car_name]:
                     f.seek(block["off"])
                     f.write(bytes.fromhex(block["hex"].replace(" ", "")))
-            messagebox.showinfo("OK", LANG[self.cur_lang]['success_inject'])
-        except Exception as e: messagebox.showerror("Err", str(e))
+            self._nfs_popup("COMPLETATO", LANG[self.cur_lang]['success_inject'], "info")
+        except Exception as e:
+            self._nfs_popup("ERRORE", str(e), "error")
 
     def apply_parts_unlock(self):
         idx = self.listbox.curselection()
-        if not idx: return messagebox.showwarning("!", LANG[self.cur_lang]['err_select'])
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
         path = self.all_saves[self.listbox.get(idx)]
         try:
             with open(path, "rb+") as f:
@@ -458,23 +1193,29 @@ class NFSU2App:
                     if block["hex"]:
                         f.seek(block["off"])
                         f.write(bytes.fromhex(block["hex"].replace(" ", "")))
-            messagebox.showinfo("OK", LANG[self.cur_lang]['success_parts'])
-        except Exception as e: messagebox.showerror("Err", str(e))
+            self._nfs_popup("COMPLETATO", LANG[self.cur_lang]['success_parts'], "info")
+        except Exception as e:
+            self._nfs_popup("ERRORE", str(e), "error")
 
     def apply_money(self):
         idx = self.listbox.curselection()
-        if not idx: return
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
         path = self.all_saves[self.listbox.get(idx)]
-        with open(path, "rb+") as f:
-            f.seek(41322)
-            f.write(struct.pack("<I", int(self.money_entry.get())))
-        messagebox.showinfo("OK", LANG[self.cur_lang]['success_money'])
+        try:
+            with open(path, "rb+") as f:
+                f.seek(41322)
+                f.write(struct.pack("<I", int(self.money_entry.get())))
+            self._nfs_popup("COMPLETATO", LANG[self.cur_lang]['success_money'], "info")
+        except Exception as e:
+            self._nfs_popup("ERRORE", str(e), "error")
 
     def apply_rename(self):
         idx = self.listbox.curselection()
-        if not idx: return
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
         old_name = self.listbox.get(idx)
-        new_name = simpledialog.askstring("Rename", LANG[self.cur_lang]['rename_prompt'])
+        new_name = self._nfs_ask_string("RINOMINA", LANG[self.cur_lang]['rename_prompt'])
         if not new_name: return
         new_name = new_name.strip()[:7]
         path = self.all_saves[old_name]
@@ -484,21 +1225,107 @@ class NFSU2App:
                 f.write(new_name.encode().ljust(7, b'\x00'))
             old_dir = os.path.dirname(path)
             parent = os.path.dirname(old_dir)
-            new_file_path = os.path.join(old_dir, new_name)
-            os.rename(path, new_file_path)
+            os.rename(path, os.path.join(old_dir, new_name))
             os.rename(old_dir, os.path.join(parent, new_name))
             self.full_scan()
-            messagebox.showinfo("OK", LANG[self.cur_lang]['success_rename'])
-        except Exception: messagebox.showerror("Err", LANG[self.cur_lang]['err_admin'])
+            self._nfs_popup("COMPLETATO", LANG[self.cur_lang]['success_rename'], "info")
+        except Exception:
+            self._nfs_popup("ERRORE", LANG[self.cur_lang]['err_admin'], "error")
 
     def apply_backup(self):
         idx = self.listbox.curselection()
-        if not idx: return
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
         src = self.all_saves[self.listbox.get(idx)]
         dst = os.path.join(os.path.expanduser("~"), "Desktop", "NFSU2_Backups")
         os.makedirs(dst, exist_ok=True)
         shutil.copy2(src, os.path.join(dst, os.path.basename(src) + f"_{self.listbox.get(idx)}.bak"))
-        messagebox.showinfo("OK", "Backup Saved!")
+        self._nfs_popup("BACKUP", "Backup salvato sul Desktop!", "info")
+
+    # --- OFFSETS per estrazione auto ---
+    CAR_OFFSETS = [
+        {"off": 0x5870, "size": 0xC8},
+        {"off": 0x5950, "size": 0x40},
+        {"off": 0x5B20, "size": 0x10},
+        {"off": 0xAD80, "size": 0x20},
+        {"off": 0xC2D0, "size": 0x10},
+        {"off": 0xC3B0, "size": 0x36},
+    ]
+
+    def extract_car_patch(self):
+        idx = self.listbox.curselection()
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
+        path = self.all_saves[self.listbox.get(idx)]
+
+        car_name = self._nfs_ask_string("ESTRAI AUTO", LANG[self.cur_lang]['extract_name_prompt'])
+        if not car_name: return
+
+        try:
+            blocks = []
+            with open(path, "rb") as f:
+                for block in self.CAR_OFFSETS:
+                    f.seek(block["off"])
+                    data = f.read(block["size"])
+                    blocks.append({"off": block["off"],
+                                   "hex": " ".join(f"{b:02X}" for b in data)})
+            patch = {"car_name": car_name,
+                     "source_profile": self.listbox.get(idx),
+                     "blocks": blocks}
+
+            save_path = filedialog.asksaveasfilename(
+                defaultextension=".json",
+                filetypes=[("JSON Patch", "*.json")],
+                initialfile=car_name.replace(" ", "_") + "_patch.json",
+                title="Salva patch auto"
+            )
+            if not save_path: return
+
+            with open(save_path, "w") as jf:
+                json.dump(patch, jf, indent=2)
+            self._nfs_popup("COMPLETATO", LANG[self.cur_lang]['success_extract'], "info")
+        except Exception as e:
+            self._nfs_popup("ERRORE", str(e), "error")
+
+    def apply_car_patch(self):
+        idx = self.listbox.curselection()
+        if not idx:
+            return self._nfs_popup("ATTENZIONE", LANG[self.cur_lang]['err_select'], "warn")
+        path = self.all_saves[self.listbox.get(idx)]
+
+        patch_path = filedialog.askopenfilename(
+            filetypes=[("JSON Patch", "*.json")],
+            title="Seleziona patch auto"
+        )
+        if not patch_path: return
+
+        try:
+            with open(patch_path, "r") as jf:
+                patch = json.load(jf)
+            if "blocks" not in patch or not isinstance(patch["blocks"], list):
+                return self._nfs_popup("ERRORE", LANG[self.cur_lang]['err_patch_invalid'], "error")
+
+            car_name = patch.get("car_name", "?")
+            profile = self.listbox.get(idx)
+            ok = self._nfs_popup(
+                "CONFERMA",
+                f"Inietta '{car_name}'\nnel profilo '{profile}'?",
+                "yesno"
+            )
+            if not ok: return
+
+            with open(path, "rb+") as f:
+                for block in patch["blocks"]:
+                    if "off" not in block or "hex" not in block:
+                        raise ValueError("Blocco patch malformato")
+                    f.seek(block["off"])
+                    f.write(bytes.fromhex(block["hex"].replace(" ", "")))
+            self._nfs_popup("COMPLETATO", LANG[self.cur_lang]['success_patch'], "info")
+
+        except (json.JSONDecodeError, ValueError, KeyError):
+            self._nfs_popup("ERRORE", LANG[self.cur_lang]['err_patch_invalid'], "error")
+        except Exception as e:
+            self._nfs_popup("ERRORE", str(e), "error")
 
 if __name__ == "__main__":
     root = tk.Tk()
