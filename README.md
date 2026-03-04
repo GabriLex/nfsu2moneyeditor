@@ -19,7 +19,7 @@ A lightweight, user-friendly Python utility designed to edit savegames in **Need
 * **VEHICLE SWAP !(SLOT 1)**
 * **UNLOCK PARTS OPTION**
 * **SAVEGAME CAR EXTRACTION AND PATCHING**
-* **RACHEL'S CAR SWAP**
+* **EVERY CUSTOM CAR SWAPPING**
 
 ## 🛠️ How it Works
 
